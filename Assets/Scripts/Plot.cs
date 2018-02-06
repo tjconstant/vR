@@ -7,8 +7,8 @@ public class Plot : MonoBehaviour {
 	public GameObject canvas;
 	public GameObject point;
 
-	private float[] xCoords = {1,1,2,3,4,8};
-	private float[] yCoords = {1F,2,3,6,6,5};
+	private float[] xCoords = {0,1,2,3,4,8};
+	private float[] yCoords = {0,1,2,3,4,5};
 	private float[] zCoords = {0,1,2,2,4,2};
 
 	private int canvasSize = 10;
@@ -18,7 +18,7 @@ public class Plot : MonoBehaviour {
 		// Coordinate Normalization - Doesn't Work Yet for Negative Numbers
 		for (int i = 0; i < xCoords.Length; i++) {
 			xCoords [i] = (canvasSize * xCoords [i] / Mathf.Max (xCoords)) - canvasSize/2;
-			yCoords [i] = canvasSize * yCoords [i] / Mathf.Max (yCoords);
+			yCoords [i] = canvasSize * yCoords [i] / (Mathf.Max (yCoords) + 0.1F); // +0.1 to avoid problems if max is zero (need better solution)
 			zCoords [i] = (canvasSize * zCoords [i] / Mathf.Max (zCoords)) - canvasSize/2;
 		}
 
