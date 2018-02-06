@@ -7,11 +7,21 @@ public class Plot : MonoBehaviour {
 	public GameObject canvas;
 	public GameObject point;
 
-	private float[] xCoords = {0,1,2,3,4};
-	private float[] yCoords = {0,0,0,0,0};
-	private float[] zCoords = {0,1,2,3,4};
+	private float[] xCoords = {1,1,2,3,4,8};
+	private float[] yCoords = {1F,2,3,6,6,5};
+	private float[] zCoords = {0,1,2,2,4,2};
+
+	private int canvasSize = 10;
 
 	void Start () {
+
+		// Coordinate Normalization - Doesn't Work Yet for Negative Numbers
+		for (int i = 0; i < xCoords.Length; i++) {
+			xCoords [i] = (canvasSize * xCoords [i] / Mathf.Max (xCoords)) - canvasSize/2;
+			yCoords [i] = canvasSize * yCoords [i] / Mathf.Max (yCoords);
+			zCoords [i] = (canvasSize * zCoords [i] / Mathf.Max (zCoords)) - canvasSize/2;
+		}
+
 		GeomPoint ();
 		GeomLine (); 
 	}
@@ -40,12 +50,13 @@ public class Plot : MonoBehaviour {
 	void GeomLine () {
 		// Plot Line unsing LineRenderer
 
-		//LineRenderer myLine = canvas.GetComponent<LineRenderer>();
-		LineRenderer myLine = canvas.AddComponent<LineRenderer>();
+		LineRenderer myLine = canvas.GetComponent<LineRenderer>();
+		//LineRenderer myLine = canvas.AddComponent<LineRenderer>();
 		myLine.useWorldSpace = false;
 		var coordArray = MakeCoordArray (xCoords, yCoords, zCoords);
 		myLine.positionCount = coordArray.Length;
 		myLine.SetPositions (coordArray);
+		myLine.widthMultiplier = 0.3F;
 		myLine.enabled = true;
 	}
 	
