@@ -1,6 +1,6 @@
 ﻿using System.Collections;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class Plot : MonoBehaviour {
@@ -17,7 +17,8 @@ public class Plot : MonoBehaviour {
 	void Start () {
 
 
-		Debug.Log(read_csv ("C:\\Users\\Tom\\Documents\\text.csv"));
+		Vector3[] tom = read_csv ("C:\\Users\\Tom\\Documents\\text.csv");
+		Debug.Log (tom);
 
 		// Coordinate Normalization - Doesn't Work Yet for Negative Numbers
 		for (int i = 0; i < xCoords.Length; i++) {
@@ -26,14 +27,14 @@ public class Plot : MonoBehaviour {
 			zCoords [i] = (canvasSize * zCoords [i] / Mathf.Max (zCoords)) - canvasSize/2;
 		}
 
-		GeomPoint ();
-		GeomLine (); 
+		GeomPoint (tom);
+		GeomLine (tom); 
 	}
 
 	// Make a Coordinate Array of type Vector3
 	Vector3[] MakeCoordArray (float[] x, float[] y, float[] z){
 		
-		Vector3[] coords = new Vector3[xCoords.Length];
+		Vector3[] coords = new Vector3[x.Length];
 		for (int i = 0; i < x.Length; i++) {
 			coords [i] = new Vector3 (x [i], y [i], z [i]);
 		}
@@ -42,38 +43,47 @@ public class Plot : MonoBehaviour {
 	}
 
 	// Read CSV Function
-	string[] read_csv(string filename){
+	Vector3[] read_csv(string filename){
 		
 		string str = System.IO.File.ReadAllText (filename);
-		string[] values = str.Split(',');
-		return values;
+		string[] values = str.Split('\n');
+
+		float[] xCoords = new float[100];
+		float[] yCoords = new float[100]; 
+		float[] zCoords = new float[100]; 
+
+		for(int i = 1; i<100; i++){
+			xCoords[i] = float.Parse(values [i].Split (',')[0]);
+			yCoords[i] = float.Parse(values [i].Split (',')[2]);
+			zCoords[i] = float.Parse(values [i].Split (',')[1]);
+		}
+
+		return MakeCoordArray (xCoords, yCoords, zCoords);
 
 	}
-
-	//public class Geom {
-
-	void GeomPoint () {
+		
+	void GeomPoint (Vector3[] coordArray) {
 		// Plot Points using Spheres
-		for (int i = 0; i < xCoords.Length; i++) {
-			var myPoint = Instantiate(point, canvas.transform.position + new Vector3(xCoords[i], yCoords[i], zCoords[i]), Quaternion.identity);
+		for (int i = 0; i < coordArray.Length; i++) {
+			var myPoint = Instantiate(point, canvas.transform.position + coordArray[i], Quaternion.identity);
 			myPoint.transform.parent = canvas.transform;
 		}
 	}
 
-	void GeomLine () {
+	void GeomLine (Vector3[] coordArray) {
 		// Plot Line unsing LineRenderer
 
 		LineRenderer myLine = canvas.GetComponent<LineRenderer>();
 		//LineRenderer myLine = canvas.AddComponent<LineRenderer>();
 		myLine.useWorldSpace = false;
-		var coordArray = MakeCoordArray (xCoords, yCoords, zCoords);
+		//var coordArray = MakeCoordArray (xCoords, yCoords, zCoords);
 		myLine.positionCount = coordArray.Length;
 		myLine.SetPositions (coordArray);
 		myLine.widthMultiplier = 0.3F;
 		myLine.enabled = true;
 	}
 	
-	//}
+
 
 }
 
