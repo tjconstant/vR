@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,6 +15,9 @@ public class Plot : MonoBehaviour {
 	private int canvasSize = 10;
 
 	void Start () {
+
+
+		Debug.Log(read_csv ("C:\\Users\\Tom\\Documents\\text.csv"));
 
 		// Coordinate Normalization - Doesn't Work Yet for Negative Numbers
 		for (int i = 0; i < xCoords.Length; i++) {
@@ -35,6 +39,15 @@ public class Plot : MonoBehaviour {
 		}
 
 		return coords;
+	}
+
+	// Read CSV Function
+	string[] read_csv(string filename){
+		
+		string str = System.IO.File.ReadAllText (filename);
+		string[] values = str.Split(',');
+		return values;
+
 	}
 
 	//public class Geom {
