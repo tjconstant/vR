@@ -15,6 +15,7 @@ public class Plot : MonoBehaviour {
 
 	private float canvasSize = 10F;
 
+
 	void Start () {
 
 		Vector3[] myData = read_csv ("C:\\Users\\Tom\\Documents\\text.csv");
@@ -24,6 +25,7 @@ public class Plot : MonoBehaviour {
 		Axis ();
 	
 	}
+
 
 	// Make a Coordinate Array of type Vector3
 	Vector3[] MakeCoordArray (float[] x, float[] y, float[] z){
@@ -40,7 +42,7 @@ public class Plot : MonoBehaviour {
 	float[] NormalizeArray(float[] coords){
 		
 		float maxCoord = Mathf.Max (coords);
-		float minCoord = Mathf.Min (coords);
+		//float minCoord = Mathf.Min (coords);
 		//float centerCoord = (maxCoord - minCoord) / 2;
 
 		for (int i = 0; i < coords.Length; i++) {
@@ -78,10 +80,13 @@ public class Plot : MonoBehaviour {
 		
 	void GeomPoint (Vector3[] coordArray) {
 		// Plot Points using Spheres
+
+
 		for (int i = 0; i < coordArray.Length; i++) {
-			var myPoint = Instantiate(point, canvas.transform.position + coordArray[i], Quaternion.identity);
+			var myPoint = Instantiate(point, canvas.transform.TransformPoint(coordArray[i]), canvas.transform.rotation);
 			myPoint.transform.localScale = new Vector3(0.5F,0.5F,0.5F);
-			myPoint.transform.parent = canvas.transform;
+			myPoint.transform.SetParent(canvas.transform);
+			//myPoint.transform.parent = canvas.transform;
 		}
 	}
 
