@@ -7,26 +7,22 @@ public class Plot : MonoBehaviour {
 
 	public GameObject canvas;
 	public GameObject point;
+	public Transform axisText;
 
 	//private float[] xCoords = {0,1,2,3,4,8};
 	//private float[] yCoords = {0,1,2,3,4,5};
 	//private float[] zCoords = {0,1,2,2,4,2};
 
-	private int canvasSize = 10;
+	private float canvasSize = 10F;
 
 	void Start () {
 
 		Vector3[] myData = read_csv ("C:\\Users\\Tom\\Documents\\text.csv");
 
-		// Coordinate Normalization - Doesn't Work Yet for Negative Numbers
-		//for (int i = 0; i < xCoords.Length; i++) {
-		//	xCoords [i] = (canvasSize * xCoords [i] / Mathf.Max (xCoords)) - canvasSize/2;
-		//	yCoords [i] = canvasSize * yCoords [i] / (Mathf.Max (yCoords) + 0.1F); // +0.1 to avoid problems if max is zero (need better solution)
-		//	zCoords [i] = (canvasSize * zCoords [i] / Mathf.Max (zCoords)) - canvasSize/2;
-		//}
-
 		GeomPoint (myData);
-		GeomLine (myData); 
+		GeomLine (myData);
+		Axis ();
+	
 	}
 
 	// Make a Coordinate Array of type Vector3
@@ -40,6 +36,20 @@ public class Plot : MonoBehaviour {
 		return coords;
 	}
 
+	// Normalise Vectors to Canvas Size (unfinished)
+	float[] NormalizeArray(float[] coords){
+		
+		float maxCoord = Mathf.Max (coords);
+		float minCoord = Mathf.Min (coords);
+		//float centerCoord = (maxCoord - minCoord) / 2;
+
+		for (int i = 0; i < coords.Length; i++) {
+			coords [i] *= (canvasSize / (maxCoord));
+			coords [i] *= 0.5F;
+		}
+		return coords;
+	}
+
 	// Read CSV Function
 	Vector3[] read_csv(string filename){
 		
@@ -48,15 +58,19 @@ public class Plot : MonoBehaviour {
 
 
 		// Including an empty 0,0 point that needs to be removed
-		float[] xCoords = new float[values.Length-1]; //-1 to remove
-		float[] yCoords = new float[values.Length-1]; 
-		float[] zCoords = new float[values.Length-1]; 
+		float[] xCoords = new float[values.Length-2]; //-1 to remove
+		float[] yCoords = new float[values.Length-2]; 
+		float[] zCoords = new float[values.Length-2]; 
 
-		for(int i = 1; i<values.Length-1; i++){
-			xCoords[i] = float.Parse(values [i].Split (',')[0]);
-			yCoords[i] = float.Parse(values [i].Split (',')[2]);
-			zCoords[i] = float.Parse(values [i].Split (',')[1]);
+		for(int i = 0; i<(values.Length-2); i++){
+			xCoords[i] = float.Parse(values [i+1].Split (',')[0]);
+			yCoords[i] = float.Parse(values [i+1].Split (',')[2]);
+			zCoords[i] = float.Parse(values [i+1].Split (',')[1]);
 		}
+
+		xCoords = NormalizeArray (xCoords);
+		//yCoords = NormalizeArray (yCoords);
+		zCoords = NormalizeArray (zCoords);
 
 		return MakeCoordArray (xCoords, yCoords, zCoords);
 
@@ -66,7 +80,7 @@ public class Plot : MonoBehaviour {
 		// Plot Points using Spheres
 		for (int i = 0; i < coordArray.Length; i++) {
 			var myPoint = Instantiate(point, canvas.transform.position + coordArray[i], Quaternion.identity);
-			//myPoint.transform.localScale = new Vector3(0.1F,0.1F,0.1F);
+			myPoint.transform.localScale = new Vector3(0.5F,0.5F,0.5F);
 			myPoint.transform.parent = canvas.transform;
 		}
 	}
@@ -82,8 +96,34 @@ public class Plot : MonoBehaviour {
 		myLine.widthMultiplier = 0.3F;
 		myLine.enabled = true;
 	}
-	
 
+	// Prototype Axis Maker
+	void Axis (){
+
+		float[] positions = {-5,-4,-3,-2,-1,0,1,2,3,4,5};
+
+		for(int i = 0; i < positions.Length; i++){
+			
+			Transform txtMeshTransform = (Transform)Instantiate(axisText);
+			TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();
+			txtMesh.text = positions[i].ToString();
+			txtMeshTransform.SetParent(canvas.transform);
+			txtMeshTransform.localPosition = new Vector3 (positions[i], 0.0F, -5.5F);
+			txtMeshTransform.Rotate(new Vector3(90,0,0));
+			txtMesh.color = Color.black; // Set the text's color to red
+		}
+
+		for(int i = 0; i < positions.Length; i++){
+
+			Transform txtMeshTransform = (Transform)Instantiate(axisText);
+			TextMesh txtMesh = txtMeshTransform.GetComponent<TextMesh>();
+			txtMesh.text = positions[i].ToString();
+			txtMeshTransform.SetParent(canvas.transform);
+			txtMeshTransform.localPosition = new Vector3 (-5.5F, 0.0F, positions[i]);
+			txtMeshTransform.Rotate(new Vector3(90,0,0));
+			txtMesh.color = Color.black; // Set the text's color to red
+		}
+	}
 
 }
 
