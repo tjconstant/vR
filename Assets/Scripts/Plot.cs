@@ -17,13 +17,13 @@ public class Plot : MonoBehaviour {
 
 
 	void Start () {
-
+		
 		Vector3[] myData = read_csv ("C:\\Users\\Tom\\Documents\\text.csv");
 
 		GeomPoint (myData);
 		GeomLine (myData);
 		Axis ();
-	
+
 	}
 
 
@@ -80,7 +80,6 @@ public class Plot : MonoBehaviour {
 		
 	void GeomPoint (Vector3[] coordArray) {
 		// Plot Points using Spheres
-
 
 		for (int i = 0; i < coordArray.Length; i++) {
 			var myPoint = Instantiate(point, canvas.transform.TransformPoint(coordArray[i]), canvas.transform.rotation);
